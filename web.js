@@ -16,6 +16,9 @@ logic = async(name, tag) => {
     //puuid 가져오기 및 파싱
     const puuid = await axios.get(`https://dak.gg/valorant/_next/data/0UwWEikFYni1rYUhT_nKN/ko/profile/${name}-${tag}.json?name=${name}-${tag}`).then(res => res.data.pageProps.account.account.puuid);
 
+    //전적 새로고침 (dak.gg)
+    await axios.get(`https://val.dakgg.io/api/v1/rpc/account-sync/by-puuid/${puuid}`);
+
     //루프 돌리기 (모든 페이지 정보 긁어오기)
     let page = 1;
     let result = [];
@@ -27,9 +30,13 @@ logic = async(name, tag) => {
         //인게임정보 목록이 빈 페이지면 결과 출력
         if (matchData === undefined || matchData.length <= 0) return result;
 
-        //인게임 안의 플레이어 정보 가져오기
+        //게임 데이터 개별 출력
         for (let i = 0; i < matchData.length; i++) {
+
+            //게임 데이터 목록 중 하나
             const matchId = matchData[i].matchInfo.matchId;
+
+            //게임 데이터 안의 플레이어 데이터 가져오기
             const players = await axios.get(`https://dak.gg/valorant/_next/data/0UwWEikFYni1rYUhT_nKN/ko/profile/${name}-${tag}/match/${matchId}.json`).then(res => res.data.pageProps.matchDetail.players);
             
             //플레이어 개별 출력

@@ -4,33 +4,90 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEST</title>
+    <title>Valorant</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css");
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
             font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
         }
-        span:not(.b) {
-            position: absolute;
-            left: 50px;
+        .container {
+            text-align: center;
+        }
+        .container h2 {
+            padding-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+        td {
+            padding: 10px 20px;
+        }
+        td:not(:first-child) {
+            text-align: left;
+        }
+        tr {
+            border-top: 1px solid #ccc;
+        }
+        tr:first-child {
+            border-top: 0;
         }
         input {
             padding: 8px;
             outline: none;
+            width: 80%;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .bc {
+            z-index: 1;
+            background-color: rgba(0, 0, 0, .3);
+            position: absolute;
             width: 100%;
+            height: 100%;
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        @keyframes round {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .circle {
+            height: 150px;
+            width: 150px;
+            background-color: transparent;
+            border: 8px solid #fff;
+            border-top: 8px solid #333;
+            border-radius: 50%;
+            animation: round 1.5s ease infinite;
         }
     </style>
 </head>
 <body>
+    <div class="bc">
+        <div>
+            <div class="circle"></div>
+        </div>
+    </div>
     <div class="container">
         <h2>나는 누구랑 많이 했을까? - 발로란트</h2>
-        <input id="search" type="text" placeholder="이름#태그">
+        <input id="search" spellcheck="false" type="text" placeholder="이름#태그">
+        <table>
+        </table>
     </div>
     <script>
         $("#search").keydown(e => {
             if (e.keyCode === 13) {
+                $(".bc").css({ display: "flex" });
+                $("tr").remove();
                 $("p").remove();
                 $(".container").append('<h4>조금만 기다려주세요</h4>');
                 $.ajax({
@@ -46,9 +103,10 @@
                     }
                     else {
                         for (let i = 0; i < e.length; i++) {
-                            $(".container").append(`<p><span class='b'>${e[i].count}</span><span>${e[i].user}</span></p>`);
+                            $("table").append(`<tr><td>${e[i].count}</td><td>${e[i].user}</td></tr>`);
                         }
                     }
+                    $(".bc").css({ display: "none" });
                 });
             }
         });
