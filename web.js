@@ -54,6 +54,7 @@ logic = async(name, tag) => {
     } 
 }
 
+const reqIP = require('request-ip');
 app.post('/api/search', async (req, res) => {
     let name = String(req.body.name).split('#')[0];
     let tag = String(req.body.name).split('#')[1];
@@ -75,6 +76,9 @@ app.post('/api/search', async (req, res) => {
         if (a.count < b.count) return 1;
         return 0;
     });
+
+    //요청자 IP확인
+    console.log(`post ip: ${reqIP.getClientIp(req)}`);
 
     //값 반환
     res.send(filter);
