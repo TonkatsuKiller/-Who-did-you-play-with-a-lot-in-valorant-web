@@ -24,6 +24,7 @@ logic = async(name, tag, refresh) => {
     let result = [];
     let maps = [];
     let matchesLen = 0;
+    let filterMatchesLen = 0;
     let headshot = 0;
     let bodyshot = 0;
     let legshot = 0;
@@ -37,6 +38,7 @@ logic = async(name, tag, refresh) => {
         if (matchData === undefined || matchData.length <= 0) return { 
             players: result, 
             matchesLen,
+            filterMatchesLen,
             maps,
             headshot: headshot/matchesLen,
             bodyshot: bodyshot/matchesLen,
@@ -83,6 +85,7 @@ logic = async(name, tag, refresh) => {
                 } 
                 else {
                     if (matchData[i].matchInfo.queueId === 'unrated' || matchData[i].matchInfo.queueId === 'competitive') {
+                        filterMatchesLen++;
                         headshot += matchData[i].stat.headshots;
                         bodyshot += matchData[i].stat.bodyshots;
                         legshot += matchData[i].stat.legshots;
@@ -100,6 +103,8 @@ app.post('/api/search', async (req, res) => {
     let name = String(req.body.name).split('#')[0];
     let tag = String(req.body.name).split('#')[1];
 
+    const pan = Number(req.body.pan.includes("-") ? "0" : req.body.pan);
+
     const refresh = req.body.refresh;
 
     let result;
@@ -112,7 +117,7 @@ app.post('/api/search', async (req, res) => {
     }
 
     //한판 이하인 사람 제외
-    const filter = result.players.filter(x => x.count > 1);
+    const filter = result.players.filter(x => x.count >= pan);
 
     //내림차순 정렬
     filter.sort((a,b) => {
@@ -175,6 +180,7 @@ app.post('/api/search', async (req, res) => {
     res.send({ 
         filter, 
         matchesLen: result.matchesLen,
+        filterMatchesLen: result.filterMatchesLen,
         map: topMap,
         mapImg,
         kd: (result.kd).toFixed(2),

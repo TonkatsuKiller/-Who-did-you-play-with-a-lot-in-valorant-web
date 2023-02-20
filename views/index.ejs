@@ -63,12 +63,20 @@
             border-bottom: 1px solid rgb(228, 228, 228);
         }
 
+        #s div label {
+            margin: 5px;
+        }
+
         #search {
             width: 280px;
             padding: 8px;
             outline: none;
             margin-top: 20px;
             font-size: 16px;
+        }
+
+        #pan {
+            width: 50px;
         }
 
         #ref {
@@ -97,10 +105,12 @@
             padding: 20px 0;
             border-bottom: 1px solid rgb(228, 228, 228);
         }
+
         #detail p {
             padding: 5px 0;
         }
-        #detail p:not(:last-child){
+
+        #detail p:not(:last-child) {
             border-bottom: 1px solid rgb(228, 228, 228);
         }
 
@@ -149,12 +159,15 @@
         <h2>나는 누구랑 많이 했을까?</h2>
         <div id="s">
             <input id="search" spellcheck="false" type="text" placeholder="발로란트 이름#태그">
-            <label><input id="ref" type="checkbox" value="ok">전적 갱신</label>
+            <div>
+                <label><input id="ref" type="checkbox" value="ok">전적 갱신</label>
+                <label class="lef"><input id="pan" type="number" value="2">판 이상</label>
+            </div>
         </div>
         <p id="matchesLen">해당 정보는 부정확할 수 있습니다</p>
         <div class="left">
             <div id="detail">
-                <h4>맵을 제외한 스탯은 일반과 경쟁만 포함</h4><br>
+                <h4>맵을 제외한 평균 스탯은 일반과 경쟁만 포함 (<span id="film">0</span>회)</h4><br>
                 <p id="kd">K/D: <b id="kdt">0</b></p>
                 <p>헤드샷: <b id="headshot">0</b>회</p>
                 <p>바디샷: <b id="bodyshot">0</b>회</p>
@@ -174,17 +187,27 @@
                 $(".bc").css({ display: "flex" });
                 $("tr").remove();
                 $("h3").remove();
+                $("#none").remove();
                 $("#etc").remove();
+                $("#matchesLen").html(`해당 정보는 부정확할 수 있습니다`);
+                $("#play").text(`맵`);
+                $("#map").css({ "background": `none` });
+                $("#film").text("0");
+                $("#kdt").text("0");
+                $("#headshot").text("0");
+                $("#bodyshot").text("0");
+                $("#legshot").text("0");
                 $.ajax({
                     type: 'POST',
                     url: '/api/search',
                     data: {
                         name: $("#search").val(),
-                        refresh: $("#ref").is(':checked')
+                        refresh: $("#ref").is(':checked'),
+                        pan: $("#pan").val()
                     }
                 }).done(e => {
                     if (e == "err") {
-                        $(".container").append(`<p>알 수 없는 유저명입니다.</p>`);
+                        $(".container").append(`<p id='none'>알 수 없는 유저명입니다.</p>`);
                     }
                     else {
                         if (e.filter.length <= 0) {
@@ -196,9 +219,10 @@
                             }
                         }
                         $("#matchesLen").html(`총 <b>${e.matchesLen}</b>회의 게임을 조회`);
-                        $("#play").text(e.map.name);
+                        $("#play").text(`최다 플레이 맵: ${e.map.name}`);
                         //linear-gradient(to bottom, transparent, rgba(0, 0, 0) 120%), url...
                         $("#map").css({ "background": `url(${e.mapImg}) no-repeat center/cover` });
+                        $("#film").text(e.filterMatchesLen);
                         $("#kdt").text(e.kd);
                         $("#headshot").text(e.headshot);
                         $("#bodyshot").text(e.bodyshot);
