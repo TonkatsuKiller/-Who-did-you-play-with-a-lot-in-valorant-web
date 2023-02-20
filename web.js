@@ -7,6 +7,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.listen(8002);
 
+
+function changeMillis(t) {
+    const millisToMin = (t/(1000*60))%60;
+    const minStr = String(millisToMin).split('.');
+    const minutes = parseInt(minStr[0]);
+    const seconds = minStr[1] === undefined ? 0 : ((Number(minStr[1])/100)*60).toFixed(0).substring(0, 2);
+    return { minutes, seconds };
+}
+
 const axios = require('axios');
 logic = async(name, tag, refresh) => {
 
@@ -25,6 +34,8 @@ logic = async(name, tag, refresh) => {
     let maps = [];
     let matchesLen = 0;
     let filterMatchesLen = 0;
+    let allMinutes = 0;
+    let allSeconds = 0;
     let headshot = 0;
     let bodyshot = 0;
     let legshot = 0;
@@ -39,6 +50,8 @@ logic = async(name, tag, refresh) => {
             players: result, 
             matchesLen,
             filterMatchesLen,
+            allMinutes,
+            allSeconds,
             maps,
             headshot: headshot/matchesLen,
             bodyshot: bodyshot/matchesLen,
@@ -54,6 +67,11 @@ logic = async(name, tag, refresh) => {
 
             //플레이한 맵명 가져오기
             const mapName = matchData[i].matchInfo.mapName;
+
+            //총 플레이타임 계산
+            const getTime = changeMillis(matchData[i].matchInfo.gameLengthMillis);
+            allMinutes += Number(getTime.minutes);
+            allSeconds += Number(getTime.seconds);
 
             //게임 데이터 목록 중 하나
             const matchId = matchData[i].matchInfo.matchId;
@@ -176,11 +194,18 @@ app.post('/api/search', async (req, res) => {
         topMap.name = "어센트";
     }
 
+    result.allMinutes += parseInt(result.allSeconds/60);
+    result.allSeconds = result.allSeconds%60;
+
+    console.log(result.allMinutes);
+
     //값 반환
     res.send({ 
         filter, 
         matchesLen: result.matchesLen,
         filterMatchesLen: result.filterMatchesLen,
+        allMinutes: result.allMinutes,
+        allSeconds: result.allSeconds,
         map: topMap,
         mapImg,
         kd: (result.kd).toFixed(2),

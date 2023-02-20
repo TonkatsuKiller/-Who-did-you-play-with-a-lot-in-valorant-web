@@ -90,7 +90,7 @@
             border-right: 1px solid rgb(228, 228, 228);
         }
 
-        #matchesLen {
+        #matchesLen, #allPlayTime {
             border-bottom: 1px solid rgb(228, 228, 228);
             padding: 10px 0;
         }
@@ -165,6 +165,7 @@
             </div>
         </div>
         <p id="matchesLen">해당 정보는 부정확할 수 있습니다</p>
+        <p id="allPlayTime">총 플레이 타임: <b id="playMin">0</b>분 <b id="playSec">0</b>초</p>
         <div class="left">
             <div id="detail">
                 <h4>맵을 제외한 평균 스탯은 일반과 경쟁만 포함 (<span id="film">0</span>회)</h4><br>
@@ -191,6 +192,8 @@
                 $("#etc").remove();
                 $("#matchesLen").html(`해당 정보는 부정확할 수 있습니다`);
                 $("#play").text(`맵`);
+                $("#playMin").text("0");
+                $("#playSec").text("0");
                 $("#map").css({ "background": `none` });
                 $("#film").text("0");
                 $("#kdt").text("0");
@@ -220,6 +223,8 @@
                         }
                         $("#matchesLen").html(`총 <b>${e.matchesLen}</b>회의 게임을 조회`);
                         $("#play").text(`최다 플레이 맵: ${e.map.name}`);
+                        $("#playMin").text(e.allMinutes);
+                        $("#playSec").text(e.allSeconds);
                         //linear-gradient(to bottom, transparent, rgba(0, 0, 0) 120%), url...
                         $("#map").css({ "background": `url(${e.mapImg}) no-repeat center/cover` });
                         $("#film").text(e.filterMatchesLen);
