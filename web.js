@@ -23,7 +23,7 @@ logic = async(name, tag, refresh) => {
     const target = `${name}#${String(tag).toLowerCase()}`;
 
     //puuid 가져오기 및 파싱
-    const puuid = await axios.get(`https://dak.gg/valorant/_next/data/0UwWEikFYni1rYUhT_nKN/ko/profile/${name}-${tag}.json?name=${name}-${tag}`).then(res => res.data.pageProps.account.account.puuid);
+    const puuid = await axios.get(`https://dak.gg/valorant/_next/data/vWZroJ-Pa5YzvCFX2WEHp/ko/profile/${name}-${tag}.json?name=${name}-${tag}`).then(res => res.data.pageProps.account.account.puuid);
 
     //새로고침 활성화 시 전적 새로고침 (dak.gg)
     if (refresh) await axios.get(`https://val.dakgg.io/api/v1/rpc/account-sync/by-puuid/${puuid}`);
@@ -77,7 +77,7 @@ logic = async(name, tag, refresh) => {
             const matchId = matchData[i].matchInfo.matchId;
 
             //게임 데이터 안의 플레이어 데이터 가져오기
-            const players = await axios.get(`https://dak.gg/valorant/_next/data/0UwWEikFYni1rYUhT_nKN/ko/profile/${name}-${tag}/match/${matchId}.json`).then(res => res.data.pageProps.matchDetail.players);
+            const players = await axios.get(`https://dak.gg/valorant/_next/data/vWZroJ-Pa5YzvCFX2WEHp/ko/profile/${name}-${tag}/match/${matchId}.json`).then(res => res.data.pageProps.matchDetail.players);
             
             //맵 정보 갱신
             const idx1 = maps.findIndex(x => x.name === mapName);
